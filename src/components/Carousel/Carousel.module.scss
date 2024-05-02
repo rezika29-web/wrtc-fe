@@ -1,0 +1,40 @@
+.customCarousel {
+  :global {
+    /* Float Button Style */
+    .ant-float-btn-primary .ant-float-btn-body {
+      @apply bg-primary;
+    }
+    .ant-float-btn-default .ant-float-btn-body {
+      @apply bg-transparent;
+    }
+    /* CustomCarousel.module.css */
+    .slick-dots li {
+      margin: 0 24px; /* Atur jarak antara penanda */
+    }
+    .slick-dots li button {
+      width: 16px; /* Atur lebar penanda */
+      height: 16px; /* Atur tinggi penanda */
+      border-radius: 50%; /* Membuat penanda menjadi bulat */
+    }
+    .slick-dots li button:hover {
+      @apply bg-primary; /* Ubah warna latar belakang saat hover */
+    }
+    .ant-carousel .slick-dots li button {
+      opacity: 100;
+    }
+    .slick-dots li.slick-active button {
+      @apply bg-primary; /* Ubah warna latar belakang saat aktif */
+    }
+    .slick-dots li.slick-active button:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; /* Ukuran titik putih */
+      height: 6px; /* Ukuran titik putih */
+      background-color: #ffffff; /* Warna titik putih */
+      border-radius: 50%;
+    }
+  }
+}

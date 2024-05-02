@@ -1,0 +1,155 @@
+@import 'antd/dist/reset.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+/* App.css */
+.dashed-line-container {
+  display: flex;
+  align-items: center;
+}
+
+.dashed-line {
+  border: 0;
+  border-top: 1px dashed #ff0000;
+  flex-grow: 1;
+}
+
+.text-in-line {
+  margin: 0 10px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+.register-form-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+.steps-content {
+  margin-top: 20px;
+}
+.secondarybackgroudRegister {
+  /* background-color: #EEF6FB; */
+}
+
+@media screen and (max-width: 768px) {
+  .register-form-container {
+    padding: 10px;
+  }
+}
+/* GoogleButton.css */
+.custom-button {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-container {
+  display: flex;
+  align-items: center;
+}
+
+.custom-button .icon-google {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.text-center {
+  flex: 1;
+  text-align: center;
+}
+.ant-form-item-label {
+  font-weight: bold;
+}
+
+@layer components {
+  .wrtc-h1 {
+    @apply md:text-[44px] text-2xl md:leading-[50px] font-rubik;
+  }
+  .wrtc-h2 {
+    @apply text-4xl font-rubik;
+  }
+  .wrtc-h3 {
+    @apply text-[32px] font-rubik;
+  }
+  .wrtc-h4 {
+    @apply text-[28px] font-rubik;
+  }
+  .wrtc-h5 {
+    @apply text-2xl font-rubik;
+  }
+  .wrtc-h6 {
+    @apply text-xl font-rubik;
+  }
+  .wrtc-subtitle {
+    @apply text-lg;
+  }
+  .wrtc-body1 {
+    @apply text-base;
+  }
+  .wrtc-body2 {
+    @apply text-sm;
+  }
+  .wrtc-caption {
+    @apply text-xs;
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Card style */
+.ant-card .ant-card-body {
+  padding: 0;
+}
+
+/* Float Button Style */
+.ant-float-btn-primary .ant-float-btn-body {
+  @apply bg-primary;
+}
+.ant-float-btn-default .ant-float-btn-body {
+  @apply bg-transparent;
+}
+
+/* Swiper Style */
+.mySwiper .swiper-pagination-bullet {
+  width: 16px;
+  height: 16px;
+  padding: 1px !important;
+  background-color: rgb(208, 207, 207) !important;
+  border-radius: 50%;
+  @apply mx-6 mt-0 md:mb-5 mb-1 !important;
+  position: relative;
+}
+.mySwiper .swiper-pagination-bullet-active {
+  @apply bg-primary !important;
+}
+.mySwiper .swiper-pagination-bullet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  background-color: white;
+  border-radius: 50%;
+  display: none;
+}
+.mySwiper .swiper-pagination-bullet-active::after {
+  display: block;
+}
+.mySwiper .swiper-pagination-bullet:not(.swiper-pagination-bullet-active) {
+  background-color: rgb(204, 204, 204) !important;
+  opacity: 1 !important;
+}
+
+/* Modal Style */
+.ant-modal .ant-modal-content {
+  padding: 48px;
+}

@@ -1,0 +1,35 @@
+#adminContainer {
+  .logo {
+    margin: 16px;
+    text-align: center;
+  }
+
+  .site-layout .site-layout-background {
+    @apply bg-white;
+  }
+
+  :global {
+    [data-theme='dark'] .site-layout .site-layout-background {
+      background: #141414;
+    }
+
+    .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) {
+      width: 85%;
+      margin-left: 7%;
+    }
+
+    .ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal)
+      .ant-menu-item-selected {
+      background-color: #18687f !important;
+      border-radius: 5px;
+    }
+
+    inline.ant-menu-sub {
+      background: transparent;
+    }
+
+    .ant-menu-dark .ant-menu-inline.ant-menu-sub {
+      background: transparent !important;
+    }
+  }
+}
