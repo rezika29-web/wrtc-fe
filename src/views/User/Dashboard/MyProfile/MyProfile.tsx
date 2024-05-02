@@ -40,8 +40,14 @@ function MyProfile() {
           Alexander Supatramp
         </Text>
       </div>
-      <div className="bg-blue-500 flex flex-col justify-center md:rounded-xl rounded-2xl w-full mb-20">
-        <div className="md:flex md:items-start rounded-t-xl justify-end bg-blue-600 bg-gradient-to-r">
+      <div className="bg-white flex flex-col justify-center md:rounded-xl rounded-2xl w-full mb-20">
+        <div
+          // className="md:flex md:items-start rounded-t-xl justify-end bg-blue-600 bg-gradient-to-r"
+          className="md:flex md:items-start rounded-t-xl justify-end"
+          style={{
+            background: 'linear-gradient(90deg, #1088c6 0%, #1286c9 100%)'
+          }}
+        >
           {/* <div className="md:flex md:-right-12 md:bottom-0 max-h md:justify-end md:items-end"> */}
           <Image
             src="/images/rectangle1.png"
@@ -51,7 +57,7 @@ function MyProfile() {
             className="flex justify-items-end rounded-tr-xl"
           />
           {/* <Image
-              src="/icons/vektor-2.svg"
+              src="/icons/vektor-1.svg"
               alt="img-faq"
               width={765}
               height={389}
@@ -59,16 +65,35 @@ function MyProfile() {
             /> */}
           {/* </div> */}
         </div>
-        <div className="flex z-2">
+        <div className="flex z-2"
+          style={{
+            padding: '10px 40px'
+          }}
+        >
           <div className="flex flex-row md:w-full ">
-            <div className="md:w-[20%]">
+            <div
+              // className="md:w-[20%]"
+              style={{
+                position: 'relative',
+                top: '-100px',
+                minWidth: '200px'
+              }}
+            >
               <Avatar
                 size={200}
                 icon={<UserOutlined />}
                 src="/images/picture.png"
               />
             </div>
-            <div className="md:w-[80%]">
+            <div 
+            // className="md:w-[80%]"
+              style={{
+                position: 'relative',
+                top: '-50px',
+                width: '100%',
+                padding: '0px 30px',
+              }}
+            >
               <Text
                 size="body1"
                 className="md:text-lg text-base font-inter font-bold mb-4"
@@ -76,35 +101,79 @@ function MyProfile() {
               >
                 My Profile
               </Text>
-              <div className="flex flex-row md:w-[95%] bg-slate-400">
-                <div className="md:w-[30%]">
+              <div className="flex flex-row"
+                style={{
+                  gap: 20,
+                  marginTop: 30
+                }}
+              >
+                <div
+                  // className="md:w-[30%]"
+                  style={{
+                    width: 'calc(100% / 2)',
+                  }}
+                >
                   <Form form={form} onFinish={handleSubmit} layout="vertical">
                     <Form.Item
                       label="Email"
-                      name="fullName"
+                      name="email"
                       colon={false}
                       labelAlign="right"
-                      style={{ borderBottom: '1px solid black' }}
+                      style={{
+                        borderBottom: '1px solid black',
+                        marginBottom: '0px',
+                        marginTop: '0px'
+                      }}
                     >
-                      <SimpleInput placeholder="Masukkan Nama Lengkap" />
+                      <SimpleInput
+                        style={{
+                          border: 'none',
+                          padding: '1rem 0px !important',
+                          boxShadow: 'none'
+                        }}
+                        placeholder="Masukkan Email"
+                      />
                     </Form.Item>
                   </Form>
                 </div>
-                <div className="md:w-[30%]">
+                <div
+                  // className="md:w-[30%]"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    borderBottom: '1px solid black',
+                    justifyContent: 'space-between',
+                    width: 'calc(100% / 2)',
+                  }}
+                >
                   <Form form={form} onFinish={handleSubmit} layout="vertical">
                     <Form.Item
                       label="Password"
-                      name="fullName"
+                      name="password"
                       colon={false}
                       labelAlign="right"
-                      style={{ borderBottom: '1px solid black' }}
+                      style={{
+                        marginBottom: '0px',
+                        marginTop: '0px'
+                      }}
                     >
-                      <SimpleInput value="*************" />
+                      <SimpleInput
+                        style={{
+                          border: 'none',
+                          padding: '1rem 0px !important',
+                          boxShadow: 'none'
+                        }}
+                        placeholder="Masukkan Password"
+                      />
                     </Form.Item>
                   </Form>
-                </div>
-                <div className="md:w-[30%] justify-items-end justify-end align-text-bottom">
-                  <Link href="/register/persyaratan" target="_blank">
+                  <Link
+                    href="/register/persyaratan"
+                    target="_blank"
+                    style={{
+                      textDecoration: 'underline',
+                    }}
+                  >
                     Change Password
                   </Link>
                 </div>
