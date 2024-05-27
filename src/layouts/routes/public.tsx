@@ -39,17 +39,47 @@ const routes = [
     exact: true,
   },
   {
-    path: '/dashboard/myprofile',
+    path: '/dashboard/my-profile',
     layout: PublicContainer,
     exact: true,
   },
   {
-    path: '/dashboard/my-profile/detailprofile',
+    path: '/dashboard/my-profile/detail-profile',
     layout: PublicContainer,
     exact: true,
   },
   {
-    path: '/dashboard/paymenthistory',
+    path: '/event/register-event/step-one',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/event/register-event/step-two',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/event/register-event/step-three',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/event/register-event/step-four',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/dashboard/padang-explore',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/dashboard/padang-explore/[id]',
+    layout: PublicContainer,
+    exact: true,
+  },
+  {
+    path: '/dashboard/payment-history',
     layout: PublicContainer,
     exact: true,
   },

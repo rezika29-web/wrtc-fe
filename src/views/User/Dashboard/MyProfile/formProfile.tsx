@@ -1,206 +1,202 @@
 import React, { useEffect, useState } from 'react'
-import { Radio, Form, Checkbox, Select, Switch, Input } from 'antd'
-import Text from 'components/Text'
+import { Radio, Form, Select, Switch, Input, DatePicker } from 'antd'
 import SimpleInput from 'components/Forms/Input/Inputs'
-import PrimaryButton, { LinkButton } from 'components/Buttons'
 import Link from 'next/link'
-import DashedLine from 'views/User/Register/DashedLine'
+import useCities from 'data/useCities'
+import useIdentities from 'data/useIdentities'
+import useCountry from 'data/useCountry'
+import moment from 'moment'
 
 const { TextArea } = Input
-interface DataSelectedProvinceType {
-  id: string
-  name: string
-}
-function FormProfile() {
-  const [form] = Form.useForm()
+const optionsGender = [
+  { label: 'Pria', value: '1' },
+  { label: 'Wanita', value: '2' },
+]
+function FormProfile({ dataUser, valueWni, setValueWni }) {
+  const dataProfile = dataUser
+  const params = {
+    pageSize: 999,
+  }
+  const { data: dataCountries } = useCountry(params) || {}
+  const { data: dataCities } = useCities(params) || {}
+  const { data: dataMasterIdentities } = useIdentities() || {}
+  const dataCity = dataProfile?.CityId
+  const dataCountry = dataProfile?.MasterCountryId
+
+  const [masterCities, setMasterCities] = useState([])
+  const [masterCountries, setMasterCountries] = useState([])
+  const [masterIdentity, setMasterIdentity] = useState([])
+  const [valueCity, setValueCity] = useState(null)
+  const [valueCountry, setValueCountry] = useState(null)
   const { Option } = Select
-  const [provinces, setProvinces] = useState([])
-  const [selectedProvince, setSelectedProvince] = useState('')
-  const [districts, setDistricts] = useState([])
-  const [selectedDistrict, setSelectedDistrict] = useState('')
 
   useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const response = await fetch(
-          `http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json`,
-        )
-        const data = await response.json()
-        setProvinces(data)
-        // console.log(data)
-        // console.log(selectedProvince)
-      } catch (error) {
-        console.error('Error fetching provinces:', error)
-      }
+    if (dataCities) {
+      setMasterCities(dataCities)
     }
-    fetchProvinces()
-  }, [])
+  }, [dataCities])
   useEffect(() => {
-    const fetchDistricts = async () => {
-      if (selectedProvince) {
-        try {
-          const response = await fetch(
-            `http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`,
-          )
-          const data = await response.json()
-          setDistricts(data)
-        } catch (error) {
-          console.error('Error fetching districts:', error)
-        }
-      }
+    if (dataCountries) {
+      setMasterCountries(dataCountries)
     }
-    fetchDistricts()
-  }, [selectedProvince])
-  const handleProvinceChange = (value) => {
-    setSelectedProvince(value)
-    setSelectedDistrict('')
+  }, [dataCountries])
+  useEffect(() => {
+    if (dataMasterIdentities) {
+      setMasterIdentity(dataMasterIdentities)
+    }
+  }, [dataMasterIdentities])
+
+  useEffect(() => {
+    if (dataCity) {
+      setValueCity(String(dataCity))
+    }
+  }, [dataCity])
+  useEffect(() => {
+    if (dataCountry) {
+      setValueCountry(String(dataCountry))
+    }
+  }, [dataCountry])
+  useEffect(() => {
+    setValueWni(dataProfile?.wni)
+  }, [dataProfile?.wni])
+
+  const changeWni = (value) => {
+    if (value === 'WNI') {
+      setValueWni(true)
+    } else {
+      setValueWni(false)
+    }
   }
 
-  const handleDistrictChange = (value) => {
-    setSelectedDistrict(value)
-  }
+  const tglLahir = dataProfile?.tglLahir ? moment(dataProfile.tglLahir) : null
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
-  const customizeRequiredMark = (
-    label: React.ReactNode,
-    { required }: { required: boolean },
-  ) => (
-    <>
-      {label}&nbsp;
-      {required && <span style={{ color: 'red' }}>*</span>}
-    </>
-  )
+  const optionIdentities = masterIdentity.map((identity) => ({
+    label: identity.nama,
+    value: identity.id,
+  }))
+  const optionCities = masterCities.map((cities) => ({
+    label: cities.nama,
+    value: cities.id.toString(),
+  }))
+  const optionCountries = masterCountries.map((countries) => ({
+    label: countries.nama,
+    value: countries.id.toString(),
+  }))
   return (
-    <Form
-      form={form}
-      onFinish={handleSubmit}
-      layout="vertical"
-      requiredMark={customizeRequiredMark}
-    >
+    <>
       <Form.Item
         label="Nama Lengkap"
-        name="fullName"
+        name="fullname"
         rules={[{ required: true }]}
         colon={false}
         labelAlign="right"
+        initialValue={dataProfile?.fullname || ''}
       >
         <SimpleInput placeholder="Masukkan Nama Lengkap" />
       </Form.Item>
       <Form.Item
         label="Email"
         name="email"
-        rules={[{ required: true, type: 'email' }]}
+        rules={[{ type: 'email' }]}
+        initialValue={dataProfile?.email || ''}
       >
-        <SimpleInput placeholder="Masukkan Email" />
+        <SimpleInput placeholder="Masukkan Email" readOnly />
       </Form.Item>
       <Form.Item
         label="Tempat Lahir"
-        name="tempat_lahir"
-        rules={[{ required: true }]}
+        name="tempatLahir"
+        initialValue={dataProfile?.tempatLahir || ''}
       >
         <SimpleInput placeholder="Masukkan Tempat Lahir" />
       </Form.Item>
       <Form.Item
-        label="Nomor Handphone"
-        name="nomor_handphone"
+        label="Tanggal Lahir"
+        name="tglLahir"
         rules={[{ required: true }]}
+        initialValue={tglLahir || ''}
+      >
+        <DatePicker style={{ width: '100%', height: '60px' }} />
+      </Form.Item>
+      <Form.Item
+        label="Nomor Handphone"
+        name="telp"
+        initialValue={dataProfile?.telp || ''}
       >
         <SimpleInput placeholder="Masukkan Nomor Handphone" />
       </Form.Item>
-      <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
-        <Radio.Group>
-          <Radio value="1">Pria</Radio>
-          <Radio value="2">Wanita</Radio>
-        </Radio.Group>
+      <Form.Item
+        label="Gender"
+        name="MasterGenderId"
+        initialValue={dataUser?.MasterGenderId || ''}
+      >
+        <Radio.Group options={optionsGender} />
       </Form.Item>
       <Form.Item
         label="Kewarganegaraan (WNI/WNA)"
-        name="negara"
+        name="wni"
         rules={[{ required: true }]}
+        initialValue={dataProfile?.wni === true ? 'WNI' : 'WNA'}
       >
-        <Select defaultValue="WNI" style={{ height: '60px' }}>
+        <Select style={{ height: '60px' }} onChange={changeWni}>
           <Option value="WNI">WNI</Option>
           <Option value="WNA">WNA</Option>
         </Select>
       </Form.Item>
-      <div className="flex flex-row items-center justify-center">
-        <div className="w-1/2 pr-2">
-          <Form.Item
-            label="Provinsi"
-            name="province"
-            rules={[{ required: true }]}
-          >
-            <Select
-              placeholder="Pilih Provinsi"
-              value={selectedProvince}
-              onChange={handleProvinceChange}
-              style={{ width: '100%', height: '60px' }}
-            >
-              {provinces.map((province) => (
-                <Option key={province.id} value={province.id}>
-                  {province.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
-        <div className="w-1/2 pl-2">
-          <Form.Item
-            label="Kabupaten/Kota"
-            name="district"
-            rules={[{ required: true }]}
-          >
-            <Select
-              placeholder="Pilih Kabupaten/Kota"
-              value={selectedDistrict}
-              onChange={handleDistrictChange}
-              style={{ width: '100%', height: '60px' }}
-              disabled={!selectedProvince}
-            >
-              {districts.map((district) => (
-                <Option key={district.id} value={district.id}>
-                  {district.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
-      </div>
-      <Form.Item label="Alamat" name="alamat" rules={[{ required: true }]}>
+      {valueWni === true && (
+        <Form.Item
+          label="Kabupaten/Kota"
+          name="CityId"
+          rules={[{ required: true }]}
+          initialValue={valueCity || ''}
+        >
+          <Select
+            placeholder="Pilih Kabupaten/Kota"
+            style={{ width: '100%', height: '60px' }}
+            options={optionCities}
+          />
+        </Form.Item>
+      )}
+      {valueWni === false && (
+        <Form.Item
+          label="Negara"
+          name="MasterCountryId"
+          rules={[{ required: true }]}
+          initialValue={valueCountry || ''}
+        >
+          <Select
+            placeholder="Pilih Negara"
+            // onChange={handleDistrictChange}
+            style={{ width: '100%', height: '60px' }}
+            options={optionCountries}
+          />
+        </Form.Item>
+      )}
+      <Form.Item
+        label="Alamat"
+        name="alamat"
+        rules={[{ required: true }]}
+        initialValue={dataProfile?.alamat || ''}
+      >
         <TextArea placeholder="Masukkan Alamat" />
       </Form.Item>
       <Form.Item
         label="Identitas"
-        name="identitas"
+        name="MasterIdentityCardId"
         rules={[{ required: true }]}
+        initialValue={dataProfile?.MasterIdentityCardId || ''}
       >
-        <Radio.Group>
-          <Radio value="KTP" style={{ marginRight: '30px' }}>
-            KTP
-          </Radio>
-          <Radio value="Kartu Pelajar" style={{ marginRight: '30px' }}>
-            Kartu Pelajar
-          </Radio>
-          <Radio value="SIM" style={{ marginRight: '30px' }}>
-            SIM
-          </Radio>
-          <Radio value="Password" style={{ marginRight: '30px' }}>
-            Password
-          </Radio>
-        </Radio.Group>
+        <Radio.Group options={optionIdentities} />
       </Form.Item>
       <Form.Item
         label="Nomor Identitas"
-        name="nomor_identitas"
+        name="noIdentitas"
         rules={[{ required: true }]}
+        initialValue={dataProfile?.noIdentitas || ''}
       >
-        <SimpleInput placeholder="Masukkan Nomor Identitas" />
-        <Text size="body2">
-          Masukan untuk Kata Sandi terdiri dari huruf, angka, dan tanda bintang
-          (). Hanya angka dan tanda bintang () yang diperbolehkan.
-        </Text>
+        <SimpleInput
+          placeholder="Masukkan Nomor Identitas"
+          defaultValue={dataProfile?.noIdentitas || ''}
+        />
       </Form.Item>
       <Form.Item
         name="terms"
@@ -208,10 +204,10 @@ function FormProfile() {
         rules={[
           { required: true, message: 'Please accept terms and conditions' },
         ]}
+        initialValue="checked"
       >
-        {/* <Checkbox> */}
-        <Switch /> Dengan menyetujui item dalam daftar periksa ini, Anda
-        menyatakan bahwa Anda telah membaca dan memahami{' '}
+        <Switch defaultChecked /> Dengan menyetujui item dalam daftar periksa
+        ini, Anda menyatakan bahwa Anda telah membaca dan memahami{' '}
         <Link
           style={{ color: 'blue' }}
           href="/register/persyaratan"
@@ -220,9 +216,8 @@ function FormProfile() {
           syarat dan ketentuan
         </Link>{' '}
         yang diuraikan di atas.
-        {/* </Checkbox> */}
       </Form.Item>
-    </Form>
+    </>
   )
 }
 

@@ -16,7 +16,7 @@ function ModalRegister({ onClose }) {
   }, [])
   const HandleonClose = () => {
     onClose()
-    router.push('/')
+    router.reload()
   }
   return (
     <div className="text-center">

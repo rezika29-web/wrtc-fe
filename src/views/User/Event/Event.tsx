@@ -1,18 +1,24 @@
 import PrimaryButton from 'components/Buttons'
-import Card from 'components/Cards'
+import CardEventRun from 'components/Cards'
 import ContactUs from 'components/ContactUs'
 import { Search } from 'components/Forms/Input/Search'
 import PaginationButton from 'components/Pagination/PaginationButton'
 import Text from 'components/Text'
+import useEvents from 'data/useEvents'
 import React from 'react'
 
 function Event() {
+  const { data } = useEvents({
+    filtered: [{ id: 'nama', value: '' }],
+  })
+
   // button search
   const handleSearch = (value) => {
     console.log('Search result:', value)
   }
+
   return (
-    <div className="md:px-[100px] md:py-20 px-5 py-8">
+    <div className="container md:py-20 py-8">
       {/* title event */}
       <div className="md:w-[840px] w-[320px] mx-auto text-center">
         <Text
@@ -53,30 +59,21 @@ function Event() {
       </div>
       <div>
         <div className="md:flex md:flex-row md:justify-between md:my-12 md:gap-4 my-8 flex flex-col items-center p-0">
-          {[
-            { id: 1, title: 'Padang Half Marathon' },
-            { id: 2, title: 'Padang Half Marathon' },
-            { id: 3, title: 'Padang Half Marathon' },
-            { id: 4, title: 'Padang Half Marathon' },
-          ].map((e) => (
-            <Card
-              href={`/event/event-detail/?title=${e.title}&id=${e.id}`}
+          {data?.map((e) => (
+            <CardEventRun
               key={e.id}
-              className="mt-4 bg-white shadow-sm w-full"
-              categoryName="Fun Run"
-              publishAt="12 Jan 2024"
-              title="Padang HM Family Fun Run"
-              imageUrl="/images/image-banner-example.png"
-              description="Gather your loved ones and join us for the Padang HM
-          Family Fun Run, a delightful event designed for all ages
-          to enjoy together. Experience the joy of running as a
-          family while creating cherished memories that will last a
-          lifetime!"
+              imageUrl={e.filename}
+              href={`/event/event-detail/?title=${e.nama}&id=${e.id}`}
+              description={e.deskripsi}
+              publishAt={e.createdAt}
+              title={e.nama}
+              categoryName="Event"
+              className="my-8 md:my-12"
             />
           ))}
         </div>
         <div className="flex justify-center md:mb-20 mb-8">
-          <PaginationButton />
+          <PaginationButton total={data?.lenght} />
         </div>
       </div>
       <div className="md:pt-20 py-8">

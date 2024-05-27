@@ -4,7 +4,6 @@ import PrimaryButton, { LinkButton, SecondaryButton } from 'components/Buttons'
 import SimpleInput from 'components/Forms/Input/Inputs'
 import Image from 'next/image'
 import Text from 'components/Text'
-import axios from 'axios'
 import {
   Steps,
   Form,
@@ -14,20 +13,26 @@ import {
   message,
   Checkbox,
   Typography,
-  Select,
   Space,
   Radio,
   Spin,
   Popconfirm,
+  Divider,
 } from 'antd'
-import DashedLine from './DashedLine'
+import Compress from 'react-image-file-resizer'
+import BlobToFile from 'helpers/BlobToFile'
+import SizeImageCompressor from 'constants/SizeImageCompressor'
+import CallAPI from 'services/CallAPI'
+import GoogleIcon from 'components/Icons/GoogleIcon'
+import moment from 'moment'
 import ModalRegister from './ModalRegister'
-// import { BASE_API_URL_LOCAL } from 'constant'
 
 const { Modal } = require('antd')
 
 const { Link } = Typography
 const { Step } = Steps
+const { Dragger } = Upload
+
 interface DataRegisterType {
   dataFirst: {
     fullName: string
@@ -43,12 +48,21 @@ interface DataRegisterType {
     }
   }
 }
+// const BlobToFile = (blob, name) => {
+//   return new File([blob], name, { type: blob.type })
+// }
+
 function Register() {
+  const today = moment()
+  const maxDate = today.clone().subtract(7, 'years')
+
   const [isLoading, setIsLoading] = useState(false)
+  const [successModalVisible, setSuccessModalVisible] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [form] = Form.useForm()
-  const [dataImage, setDataImage] = useState('')
-  const [priviewTitle, setPriviewTitle] = useState('')
+  const [dataImage, setDataImage] = useState(null)
+  const [previewTitle, setPreviewTitle] = useState('')
+  const [fileList, setFileList] = useState([])
   const [dataRegister, setDataRegister] = useState<DataRegisterType>({
     dataFirst: {
       fullName: '',
@@ -65,7 +79,16 @@ function Register() {
     },
   })
 
-  const [successModalVisible, setSuccessModalVisible] = useState(false)
+  const disabledDate = (current) => {
+    if (!current) {
+      return false
+    }
+    return current.isAfter(maxDate, 'day')
+  }
+  const handleImage = (image) => {
+    setDataImage(image)
+  }
+
   const sendData = async () => {
     const date = new Date(dataRegister.dataSecond.date_of_birth.$d)
     const tanggal = date.getDate()
@@ -85,15 +108,7 @@ function Register() {
         dataRegister.dataSecond.confirm_new_password,
       )
       formData.append('image', dataImage)
-      const response = await axios.post(
-        'http://localhost:5000/v1/auth/sign-up',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
-      )
+      const response = await CallAPI.register(formData)
       setSuccessModalVisible(true)
 
       message.success('Registration completed!')
@@ -117,6 +132,7 @@ function Register() {
     setIsLoading(false)
   }
   const confirm = (e) => {
+    console.log('image', dataImage)
     setIsLoading(true)
     sendData()
   }
@@ -124,16 +140,103 @@ function Register() {
     console.log(e)
   }
   const handlePreview = async (file) => {
+    console.log('handle', file.file.originFileObj)
+
     const isLt2M = file.file.size / 1024 / 1024 < 2
     if (!isLt2M) {
       message.error('Image must be smaller than 2MB!')
     } else {
       setDataImage(file.file.originFileObj)
-      setPriviewTitle(
+      setPreviewTitle(
         file.file.name || file.file.url.substring(file.url.lastIndexOf('/')),
       )
     }
   }
+  const handleChange = (info) => {
+    const { status } = info.file
+    const isLt2M = info.file.size / 1024 / 1024 < 2
+
+    if (!isLt2M) {
+      message.error('Image must be smaller than 2MB!')
+      setFileList([])
+      return
+    }
+
+    if (status !== 'uploading') {
+      console.log(info.file, info.fileList)
+    }
+
+    if (status === 'done' || status === 'uploading') {
+      setFileList([info.file])
+      setPreviewTitle(info.file.name)
+      setDataImage(info.file.originFileObj)
+      message.success(`${info.file.name} file processed successfully.`)
+    } else if (status === 'error') {
+      message.error(`${info.file.name} file upload failed.`)
+    }
+  }
+  const beforeUpload = async (file) => {
+    const isJpgOrPng =
+      file.type === 'image/jpeg' ||
+      file.type === 'image/png' ||
+      file.type === 'image/jpg'
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!')
+      return Upload.LIST_IGNORE
+    }
+    try {
+      const resizedImage = await new Promise((resolve, reject) => {
+        Compress.imageFileResizer(
+          file,
+          SizeImageCompressor.width,
+          SizeImageCompressor.height,
+          file?.name?.split('.').pop() ?? 'JPG',
+          SizeImageCompressor.quality,
+          SizeImageCompressor.rotation,
+          (uri) => {
+            resolve(uri)
+          },
+          'blob',
+        )
+      })
+      const newSize = Math.round((newFile.size / 1024 / 1024) * 100) / 100
+
+      if (newSize > SizeImageCompressor.limitServer) {
+        Modal.warning({
+          title: 'Ukuran foto terlalu besar',
+          content:
+            'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
+          closable: false,
+        })
+        return false
+      }
+    } catch (error) {
+      message.error('Failed to resize image!')
+      return false
+    }
+    return false
+  }
+  const props = {
+    name: 'file',
+    multiple: false,
+    onChange: (info) => {
+      const { status } = info.file
+      if (status !== 'uploading') {
+        console.log(info.file, info.fileList)
+        setFileList([info.file])
+      }
+      console.log(fileList)
+    },
+
+    fileList,
+    onRemove: () => {
+      setFileList([])
+    },
+    onDrop: (e) => {
+      console.log('Dropped files', e.dataTransfer.files)
+    },
+  }
+
   const toggleModal = () => {
     setSuccessModalVisible(!successModalVisible)
   }
@@ -187,14 +290,14 @@ function Register() {
             colon={false}
             labelAlign="right"
           >
-            <SimpleInput placeholder="Input your name" />
+            <SimpleInput placeholder="Masukkan nama anda" />
           </Form.Item>
           <Form.Item
             label="Alamat Email"
             name="email"
             rules={[{ required: true, type: 'email' }]}
           >
-            <SimpleInput />
+            <SimpleInput placeholder="Masukkan email anda" />
           </Form.Item>
           <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
             <Radio.Group>
@@ -219,36 +322,24 @@ function Register() {
               yang berlaku untuk event We Run the City.
             </Checkbox>
           </Form.Item>
-
-          <PrimaryButton
-            type="primary"
-            htmlType="submit"
-            className="justify-center rounded-s w-full mb-12"
-            style={{ height: '50px' }}
-          >
-            <Text className="text-[15px] text-inter font-semibold">Next</Text>
-          </PrimaryButton>
-          <DashedLine text="Atau" />
-          <div className="flex flex-col rounded-xl w-full mb-10 mt-10">
-            <LinkButton
-              style={{
-                height: '50px',
-                width: '100%',
-              }}
-              className="custom-button"
-            >
-              <div className="flex-container">
-                <img
-                  src="/images/google.png"
-                  alt="Google Icon"
-                  className="icon-google"
-                />
-                <Text className="text-[15px] text-inter font-semibold">
-                  Daftar dengan Google
-                </Text>
-              </div>
-            </LinkButton>
-          </div>
+          <Form.Item className="w-full mt-8">
+            <PrimaryButton htmlType="submit" className="w-full h-14 text-lg">
+              Next
+            </PrimaryButton>
+          </Form.Item>
+          <Divider dashed>
+            <Text className="font-medium text-[#616161]" size="body1">
+              Atau
+            </Text>
+          </Divider>
+          <SecondaryButton className="relative h-14 shadow-sm border-none hover:bg-transparent hover:text-none flex items-center w-full justify-center">
+            <span className="absolute left-5">
+              <GoogleIcon />
+            </span>
+            <Text className="text-[#444458] text-base font-semibold text-center">
+              Daftar dengan Google
+            </Text>
+          </SecondaryButton>
         </Form>
       ),
     },
@@ -267,14 +358,18 @@ function Register() {
             name="place_of_birth"
             rules={[{ required: true }]}
           >
-            <SimpleInput placeholder="Input place of birth" />
+            <SimpleInput placeholder="Masukkan tempat lahir" />
           </Form.Item>
           <Form.Item
             label="Tanggal Lahir"
             name="date_of_birth"
             rules={[{ required: true }]}
           >
-            <DatePicker style={{ width: '100%', height: '60px' }} />
+            <DatePicker
+              style={{ width: '100%', height: '60px' }}
+              placeholder="Pilih tanggal"
+              disabledDate={disabledDate}
+            />
           </Form.Item>
           <Form.Item
             label="Password"
@@ -287,7 +382,10 @@ function Register() {
               },
             ]}
           >
-            <Input.Password style={{ height: '60px' }} />
+            <Input.Password
+              style={{ height: '60px' }}
+              placeholder="Masukkan password"
+            />
           </Form.Item>
           <Form.Item
             label="Konfirmasi Password"
@@ -306,10 +404,13 @@ function Register() {
               }),
             ]}
           >
-            <Input.Password style={{ height: '60px' }} />
+            <Input.Password
+              style={{ height: '60px' }}
+              placeholder="Masukkan password"
+            />
           </Form.Item>
-          <Form.Item
-            label="Profile Picture"
+          {/* <Form.Item
+            label="Gambar Profile"
             name="profile"
             colon={false}
             labelAlign="right"
@@ -318,6 +419,7 @@ function Register() {
               <SimpleInput value={priviewTitle} readOnly />
               <Upload
                 // onPreview={handlePreview}
+                beforeUpload={beforeUpload}
                 onChange={handlePreview}
                 maxCount={1}
                 listType="picture"
@@ -333,7 +435,100 @@ function Register() {
                 </PrimaryButton>
               </Upload>
             </Space.Compact>
-            <p>Maximum Size 2 MB</p>
+            <p>Ukuran maksimal 2 MB</p>
+          </Form.Item> */}
+          <Form.Item
+            label="Gambar Profile"
+            name="profile"
+            colon={false}
+            labelAlign="right"
+          >
+            <Dragger
+              {...props}
+              accept="image/png, image/jpeg, image/jpg"
+              // eslint-disable-next-line consistent-return
+              beforeUpload={(file) => {
+                console.log('origin', file)
+
+                const isJpgOrPng =
+                  file.type === 'image/jpeg' ||
+                  file.type === 'image/png' ||
+                  file.type === 'image/jpg'
+                if (!isJpgOrPng) {
+                  message.error('You can only upload JPG/PNG file!')
+                  return Upload.LIST_IGNORE
+                }
+                Compress.imageFileResizer(
+                  file,
+                  SizeImageCompressor.width,
+                  SizeImageCompressor.height,
+                  'JPG',
+                  SizeImageCompressor.quality,
+                  SizeImageCompressor.rotation,
+                  // eslint-disable-next-line consistent-return
+                  (uri) => {
+                    console.log('uri', uri.size)
+
+                    handleImage({
+                      url: URL.createObjectURL(uri),
+                      size: uri.size,
+                      type: uri.type,
+                    })
+                    const newFile = BlobToFile(uri as Blob, file.name)
+                    const newSize =
+                      Math.round((newFile.size / 1024 / 1024) * 100) / 100
+                    if (newSize > SizeImageCompressor.limitServer) {
+                      Modal.warning({
+                        title: 'Ukuran foto terlalu besar',
+                        content:
+                          'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
+                        closable: false,
+                      })
+                      return false
+                    }
+                    // setFileList([newFile])
+
+                    // setDataImage(newFile)
+
+                    // console.log('new', newFile)
+                    // const imageURL = URL.createObjectURL(newFile)
+                    // localStorage.setItem('uploadedImage', imageURL)
+                    // const link = document.createElement('a')
+                    // link.href = imageURL
+                    // link.download = file.name
+                    // document.body.appendChild(link)
+                    // link.click()
+                    // document.body.removeChild(link)
+
+                    // setFieldValue('image', newFile)
+                    // setFieldValue('imagePreview', URL.createObjectURL(newFile))
+                  },
+                  'blob',
+                  400,
+                  400,
+                )
+              }}
+              onRemove={() => {
+                setFileList([])
+                setDataImage('')
+
+                // setFieldValue('imagePreview', null)
+                // setFieldValue('image', null)
+              }}
+              onChange={handlePreview}
+            >
+              {/* <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p> */}
+              <p className="ant-upload-text">Drop file here</p>
+              <p className="ant-upload-hint">or</p>
+              <PrimaryButton type="primary" htmlType="submit">
+                <Text className="text-[15px] text-inter font-semibold">
+                  Select File
+                </Text>
+              </PrimaryButton>
+            </Dragger>
+            <p>Ukuran maksimal 2 MB</p>
           </Form.Item>
           <div className="flex rounded-xl w-full mb-12">
             <div className="rounded-xl w-6/12 relative">
@@ -381,9 +576,9 @@ function Register() {
   )
   return (
     <Spin size="large" spinning={isLoading}>
-      <div className="px-24 py-20">
-        <div className="flex gap-x-12 justify-between mb-20 ml-20">
-          <div className="w-[700px] ml-20 py-20">
+      <div className="container px-4 py-4  md:py-20  md:w-[80%] ">
+        <div className="md:flex flex-col gap-y-12 md:flex-row md:gap-x-12 justify-center mb-20 md:px-10 ">
+          <div className="w-full md:w-[70%] py-10 md:py-20 ">
             <Text
               size="h6"
               className=" py-3 font-bold mb-6"
@@ -396,7 +591,7 @@ function Register() {
               className="mb-12 font-semibold"
               style={{ color: '#444458' }}
             >
-              Join the Padang half marathon, We Run the City!{' '}
+              Join the Padang Half Marathon, We Run the City!{' '}
             </Text>
             <Steps current={currentStep} labelPlacement="vertical">
               {steps.map((item) => (
@@ -405,12 +600,12 @@ function Register() {
             </Steps>
             <div className="steps-content">{steps[currentStep].content}</div>
           </div>
-          <div className="relative w-[400px]">
+          <div className="md:relative w-full md:w-[40%] h-70 md:h-auto ">
             <Image
               src="/images/Wrapper-Right.png"
-              alt="img-faq"
+              alt="img-Wrapper-Right"
               fill
-              className="w-[400px] rounded-tr-xl rounded-br-xl"
+              className="md:w-[100%] w-full relative md:rounded-tr-xl md:rounded-br-xl rounded-xl"
             />
           </div>
         </div>

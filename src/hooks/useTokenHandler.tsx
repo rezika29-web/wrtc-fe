@@ -2,7 +2,7 @@ import { notification } from 'antd'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-function useTokenHandler(key: 'userToken') {
+function useTokenHandler(key: 'userToken' | 'apiToken') {
   const router = useRouter()
   const [token, setToken] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {

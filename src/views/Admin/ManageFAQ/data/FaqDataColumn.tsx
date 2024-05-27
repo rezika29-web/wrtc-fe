@@ -28,28 +28,11 @@ const columns: ColumnsType<DataType> = [
     title: 'Action',
     dataIndex: 'action',
     render(value, record, index) {
-      // return (
-      // <div className="flex">
-      //   <IconButton
-      //     titlePopUp="Delete"
-      //     withPopOverConfirm
-      //     icon={<DeleteOutlined />}
-      //     className="rounded-none border-none"
-      //     descriptionPopUp="Are you sure want to delete this data?"
-      //   />
-      //   <Link href={`/admin/manage-faq/edit/?id=${record.key}`}>
-      //     <IconButton
-      //       className="rounded-none border-none"
-      //       icon={<EditOutlined />}
-      //     />
-      //   </Link>
-      // </div>
-      // )
       const optionAction = (
         <Menu>
           <Menu.Item key="edit">
             <Link
-              href={`/admin/manage-faq/edit/?id=${record.key}`}
+              href={`/admin/manage-faq/edit/?id=${record.id}`}
               className="hover:text-[#ff0000]"
             >
               Edit
@@ -88,21 +71,4 @@ const columns: ColumnsType<DataType> = [
   },
 ]
 
-// FOR MOCKUP ONLY
-
-const data = [
-  {
-    key: '1',
-    id: '1',
-    title: 'General Questions',
-    totalQuestion: 8,
-  },
-  {
-    key: '2',
-    id: '2',
-    title: 'Questions Running',
-    totalQuestion: 1,
-  },
-]
-
-export { columns, data }
+export default columns

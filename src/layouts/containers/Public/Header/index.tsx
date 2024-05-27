@@ -90,7 +90,9 @@ function Header(props: HeaderProps) {
       ),
       onClick: () => {
         deleteToken('/')
-        router.reload()
+        router.push('/').then(() => {
+          window.location.reload()
+        })
       },
     },
   ]
@@ -100,7 +102,7 @@ function Header(props: HeaderProps) {
       <div className="flex justify-center w-full h-full">
         <div className="w-full mx-5">
           <div className="h-24 flex justify-between items-center w-full">
-            <Image src="logo/WRTC.png" alt="Logo" width={150} height={30} />
+            <Image src="/logo/WRTC-2.png" alt="Logo" width={75} height={64} />
             <IconButton
               onClick={() => setShowMenu(!showMenu)}
               className="border-none text-primary"
@@ -128,76 +130,76 @@ function Header(props: HeaderProps) {
 
   return (
     <>
-      <div className="flex justify-between min-[1280px]:px-20 px-5 items-center h-24 bg-white">
-        <div className="min-[850px]:flex hidden min-[1280px]:gap-x-16 gap-x-6">
-          {headerNavigation.map((d) => (
-            <LinkText
-              key={d.href}
-              href={d.href}
-              className={`text-base font-medium ${
-                d.name === 'FAQ' && 'font-semibold text-primary'
-              }`}
-            >
-              {d.name}
-            </LinkText>
-          ))}
-        </div>
-        <div className="min-[1250px]:mx-40 mx-0">
-          <Image src="/logo/WRTC.png" alt="Logo" width={150} height={30} />
-        </div>
-        {isAuth && (
-          <div className="flex items-center gap-4">
-            <Image
-              className="rounded-full"
-              src={data?.photoAthlete?.file}
-              alt="profile"
-              width={48}
-              height={48}
-              crossOrigin="anonymous"
-            />
-            <Text
-              size="body1"
-              className="text-neutral80 text-lg font-semibold mr-4"
-            >
-              {data?.fullname}
-            </Text>
-
-            <Dropdown menu={{ items }} arrow>
+      <div className="bg-white">
+        <div className="container flex justify-between items-center h-24">
+          <div className="min-[850px]:flex hidden min-[1280px]:gap-x-16 gap-x-6">
+            {headerNavigation.map((d) => (
+              <LinkText
+                key={d.href}
+                href={d.href}
+                className={`text-base font-medium ${
+                  d.name === 'FAQ' && 'font-semibold text-primary'
+                }`}
+              >
+                {d.name}
+              </LinkText>
+            ))}
+          </div>
+          <Image src="/logo/WRTC-2.png" alt="Logo" width={75} height={64} />
+          {isAuth && (
+            <div className="flex items-center gap-4">
               <Image
-                className="cursor-pointer"
-                src="/icons/down-outlined.svg"
-                alt="Logo"
-                width={24}
-                height={24}
+                className="rounded-full"
+                src={data?.photoAthlete?.file}
+                alt="profile"
+                width={48}
+                height={48}
+                crossOrigin="anonymous"
               />
-            </Dropdown>
-          </div>
-        )}
+              <Text
+                size="body1"
+                className="text-neutral80 text-lg font-semibold mr-4"
+              >
+                {data?.fullname}
+              </Text>
 
-        {!isAuth && (
-          <div className="min-[850px]:flex hidden min-[1280px]:gap-x-6 gap-x-2 items-center">
-            <LinkButton
-              className="h-12 min-[1250px]:w-36 w-20 font-medium min-[1250px]:text-base text-xs"
-              href="/register"
-            >
-              Register
-            </LinkButton>
-            <Divider className="bg-gray-200 h-9" type="vertical" />
-            <PrimaryButton
-              onClick={setModalLogin}
-              className="h-12 min-[1250px]:w-36 w-20 font-medium min-[1250px]:text-base text-xs"
-            >
-              Login
-            </PrimaryButton>
-          </div>
-        )}
-        <IconButton
-          onClick={() => setShowMenu(!showMenu)}
-          className="border-none min-[850px]:hidden"
-          icon={<MenuOutlined className="text-primary" />}
-        />
+              <Dropdown menu={{ items }} arrow>
+                <Image
+                  className="cursor-pointer"
+                  src="/icons/down-outlined.svg"
+                  alt="Logo"
+                  width={24}
+                  height={24}
+                />
+              </Dropdown>
+            </div>
+          )}
+
+          {!isAuth && (
+            <div className="min-[850px]:flex hidden min-[1280px]:gap-x-6 gap-x-2 items-center">
+              <LinkButton
+                className="h-12 min-[1250px]:w-36 w-20 font-medium min-[1250px]:text-base text-xs"
+                href="/register"
+              >
+                Register
+              </LinkButton>
+              <Divider className="bg-gray-200 h-9" type="vertical" />
+              <PrimaryButton
+                onClick={setModalLogin}
+                className="h-12 min-[1250px]:w-36 w-20 font-medium min-[1250px]:text-base text-xs"
+              >
+                Login
+              </PrimaryButton>
+            </div>
+          )}
+          <IconButton
+            onClick={() => setShowMenu(!showMenu)}
+            className="border-none min-[850px]:hidden"
+            icon={<MenuOutlined className="text-primary" />}
+          />
+        </div>
+        {showMenu && showMenuResponsive}
       </div>
-      {showMenu && showMenuResponsive}
     </>
   )
 }

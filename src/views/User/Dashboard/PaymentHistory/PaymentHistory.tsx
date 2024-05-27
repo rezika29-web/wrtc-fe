@@ -1,67 +1,26 @@
 import React, { useState } from 'react'
 import { Table, Space, Select } from 'antd'
 import Text from 'components/Text'
+import moment from 'moment'
+import 'moment/locale/id'
 import SegmentedComponent from 'components/Segmented'
 import ContactUs from 'components/ContactUs'
+import usePaymentHistory from 'data/usePaymentHistory'
 import PrimaryButton from 'components/Buttons'
 
 const { Option } = Select
+moment.locale('id')
 
-const data = [
-  {
-    key: '1',
-    no: 1,
-    event: 'Padang Half Marathon',
-    tanggalPembayaran: '2022-01-01',
-    total: 100000,
-    status: 'Approved',
-  },
-  {
-    key: '2',
-    no: 2,
-    event: 'Event B',
-    tanggalPembayaran: '2022-02-02',
-    total: 150000,
-    status: 'Waiting',
-  },
-  {
-    key: '3',
-    no: 3,
-    event: 'Event C',
-    tanggalPembayaran: '2022-03-03',
-    total: 200000,
-    status: 'Approved',
-  },
-  {
-    key: '4',
-    no: 4,
-    event: 'Event D',
-    tanggalPembayaran: '2022-04-04',
-    total: 250000,
-    status: 'Waiting',
-  },
-  {
-    key: '5',
-    no: 5,
-    event: 'Event E',
-    tanggalPembayaran: '2022-05-05',
-    total: 300000,
-    status: 'Approved',
-  },
-  {
-    key: '6',
-    no: 6,
-    event: 'Event F',
-    tanggalPembayaran: '2022-06-06',
-    total: 350000,
-    status: 'Approved',
-  },
-]
 function PaymentHistory() {
   const [statusFilter, setStatusFilter] = useState('All')
   const [entriesPerPage, setEntriesPerPage] = useState(5)
   const [currentPage, setCurrentPage] = useState(1)
-  // const [paginationSet, setPaginationSet] = useState()
+  const { data: paymentHistory } = usePaymentHistory() || {}
+  console.log(paymentHistory)
+
+  function formatTanggal(tanggal: string): string {
+    return moment(tanggal).format('DD MMMM YYYY')
+  }
   const columns = [
     {
       title: 'No',
@@ -70,21 +29,28 @@ function PaymentHistory() {
       render: (text, record, index) =>
         (currentPage - 1) * entriesPerPage + index + 1,
     },
-    { title: 'Event', dataIndex: 'event', key: 'event' },
+    { title: 'Event', dataIndex: ['EventVirtualSport', 'nama'], key: 'event' },
     {
       title: 'Tanggal Pembayaran',
-      dataIndex: 'tanggalPembayaran',
+      dataIndex: 'createdAt',
       key: 'tanggalPembayaran',
+      render: (text: string) => formatTanggal(text),
     },
     {
       title: 'Total',
-      dataIndex: 'total',
+      dataIndex: 'totalAmount',
       key: 'total',
-      render: (text) => `Rp. ${text}`,
+      render: (text) => {
+        const formattedTotal = text.toLocaleString('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+        })
+        return formattedTotal
+      },
     },
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: 'statusLabel',
       key: 'status',
       render: (text, record) => {
         const statusColor = text === 'Approved' ? '#1F9E3D' : '#F89D3C'
@@ -110,15 +76,24 @@ function PaymentHistory() {
       key: 'aksi',
       render: (text, record) => (
         <Space size="middle">
-          {record.status === 'Waiting' && (
-            // eslint-disable-next-line react/button-has-type
+          {record.statusLabel === 'Waiting' && (
             <PrimaryButton
-              style={{
-                height: '30px',
+              style={{ height: '40px' }}
+              onClick={() => {
+                window.location.href = record.redirectUrl
               }}
-              className="rounded-md text-center justify-center w-full"
             >
               Pembayaran
+            </PrimaryButton>
+          )}
+          {record.statusLabel === 'Rejected' && (
+            <PrimaryButton
+              style={{ height: '40px' }}
+              onClick={() => {
+                window.location.href = record.redirectUrl
+              }}
+            >
+              Detail
             </PrimaryButton>
           )}
         </Space>
@@ -129,24 +104,29 @@ function PaymentHistory() {
   const handleFilterChange = (value) => {
     setStatusFilter(value)
     if (value === 'All') {
-      setEntriesPerPage(data.length)
+      setEntriesPerPage(paymentHistory.length)
     } else if (value === 'Approved') {
       setEntriesPerPage(10)
     } else if (value === 'Waiting') {
       setEntriesPerPage(5)
+    } else if (value === 'Rejected') {
+      setEntriesPerPage(10)
     }
   }
   const handleEntryChange = (value) => {
     setEntriesPerPage(value)
-    console.log(value)
   }
-  const filteredData = data.filter(
-    (item) => statusFilter === 'All' || item.status === statusFilter,
-  )
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * entriesPerPage,
-    currentPage * entriesPerPage,
-  )
+  const filteredData =
+    paymentHistory &&
+    paymentHistory.filter(
+      (item) => statusFilter === 'All' || item.statusLabel === statusFilter,
+    )
+  const paginatedData =
+    filteredData &&
+    filteredData.slice(
+      (currentPage - 1) * entriesPerPage,
+      currentPage * entriesPerPage,
+    )
 
   return (
     <div className="md:px-[100px] md:py-20">
@@ -164,9 +144,10 @@ function PaymentHistory() {
           Alexander Supatramp
         </Text>
         <SegmentedComponent
+          hrefSegmented
           options={[
             { label: 'Dashboard', link: '/' },
-            { label: 'Padang Explorer', link: '/' },
+            { label: 'Padang Explorer', link: '/dashboard/padang-explore' },
             { label: 'Gallery', link: '/' },
             { label: 'Riwayat Pembayaran', link: '/dashboard/paymenthistory' },
           ]}
@@ -199,21 +180,18 @@ function PaymentHistory() {
                 <Option value="All">All</Option>
                 <Option value="Approved">Approved</Option>
                 <Option value="Waiting">Waiting</Option>
+                <Option value="Rejected">Rejected</Option>
               </Select>
             </div>
           </div>
         </div>
-        {/* <Table columns={columns} dataSource={filteredData} /> */}
         <Table
           columns={columns}
           dataSource={paginatedData}
-          // pagination={{
-          //   pageSize: entriesPerPage,
-          // }}
           pagination={{
             pageSize: entriesPerPage,
             current: currentPage,
-            total: filteredData.length,
+            total: filteredData && filteredData.length,
             onChange: (page) => setCurrentPage(page),
           }}
         />

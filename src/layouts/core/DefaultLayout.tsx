@@ -8,7 +8,9 @@ import { AppProps } from 'next/app'
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      retry: 0,
       staleTime: 10000,
+      refetchOnWindowFocus: false,
     },
   },
 })

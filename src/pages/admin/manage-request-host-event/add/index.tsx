@@ -1,0 +1,3 @@
+import FormManageRequestHostEvent from 'views/Admin/RequstHostEvent/FormManageRequestHostEvent'
+
+export default FormManageRequestHostEvent

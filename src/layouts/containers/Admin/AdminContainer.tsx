@@ -21,7 +21,15 @@ function createMenu(label, key, icon?, children?: any, link?: any) {
 
 const MENUS = [
   createMenu('Users', 'admin', <UserAddOutlined />, null, '/admin'),
-  createMenu("FAQ's", 'users', <UserOutlined />, null, '/admin/manage-faq'),
+  createMenu("FAQ's", 'faq', <UserOutlined />, null, '/admin/manage-faq'),
+  createMenu("Event's", 'event', <UserOutlined />, null, '/admin/manage-event'),
+  createMenu(
+    'Request Host Event',
+    'request host event',
+    <UserOutlined />,
+    null,
+    '/admin/manage-request-host-event',
+  ),
 ]
 
 function AdminContainer(props: any) {

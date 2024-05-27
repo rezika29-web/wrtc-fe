@@ -1,0 +1,3 @@
+import ManagerRequestHostEvent from 'views/Admin/RequstHostEvent/ManageRequestHostEvent'
+
+export default ManagerRequestHostEvent

@@ -1,7 +1,8 @@
-import React from 'react'
-import { Card, Table, Row, Form } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Card, Table, Row, Form, Select } from 'antd'
 import Text from 'components/Text'
-import SimpleInput from 'components/Forms/Input/Inputs'
+import Image from 'next/image'
+import useJersey from 'data/useJersey'
 
 const { Meta } = Card
 
@@ -79,17 +80,19 @@ const columns = [
     key: '4xl',
   },
 ]
-const customizeRequiredMark = (
-  label: React.ReactNode,
-  { required }: { required: boolean },
-) => (
-  <>
-    {label}&nbsp;
-    {required && <span style={{ color: 'red' }}>*</span>}
-  </>
-)
-const formJersey = () => {
-  const [form] = Form.useForm()
+const formJersey = (dataUser) => {
+  const { data: dataMasterJersey } = useJersey() || {}
+  const [masterJersey, setMasterJersey] = useState([])
+  useEffect(() => {
+    if (dataMasterJersey) {
+      setMasterJersey(dataMasterJersey)
+    }
+  }, [dataMasterJersey])
+  const optionJersey = masterJersey.map((jersey) => ({
+    label: jersey.nama,
+    value: jersey.id.toString(),
+  }))
+
   return (
     <>
       <div className="flex justify-center mb-10">
@@ -108,12 +111,12 @@ const formJersey = () => {
           >
             <Meta
               avatar={
-                <img
+                <Image
                   src="/icons/Ellipse-199.png"
                   alt="avatar"
+                  width={10}
+                  height={10}
                   style={{
-                    width: 10,
-                    height: 10,
                     borderRadius: '50%',
                     justifySelf: 'center',
                   }}
@@ -131,17 +134,20 @@ const formJersey = () => {
           </div>
         </Card>
       </div>
-      <Form form={form} layout="vertical" requiredMark={customizeRequiredMark}>
-        <Form.Item
-          label="Ukuran Jersey"
-          name="ukuran"
-          rules={[{ required: true }]}
-          colon={false}
-          labelAlign="right"
-        >
-          <SimpleInput placeholder="Masukkan ukuran jersey" />
-        </Form.Item>
-      </Form>
+      <Form.Item
+        label="Ukuran Jersey"
+        name="MasterShirtSizeId"
+        rules={[{ required: true }]}
+        colon={false}
+        labelAlign="right"
+        initialValue={dataUser?.MasterShirtSizeId.toString() || ''}
+      >
+        <Select
+          placeholder="Pilih Ukuran"
+          style={{ height: '60px' }}
+          options={optionJersey}
+        />
+      </Form.Item>
     </>
   )
 }

@@ -153,3 +153,15 @@ body {
 .ant-modal .ant-modal-content {
   padding: 48px;
 }
+
+/* Steps */
+.ant-steps .ant-steps-item-tail::after {
+  height: 8px;
+}
+
+.ant-steps
+  .ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-tail::after {
+  background: linear-gradient(to right, #eb0030, #0079c4);
+}

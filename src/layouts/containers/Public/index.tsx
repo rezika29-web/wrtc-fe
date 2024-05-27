@@ -3,11 +3,7 @@ import Footer from 'layouts/containers/Public/Footer'
 import { Divider, Form, Input, Modal, Tag } from 'antd'
 import Text from 'components/Text'
 import SimpleInput from 'components/Forms/Input/Inputs'
-import PrimaryButton, {
-  LinkButton,
-  SecondaryButton,
-  TextButton,
-} from 'components/Buttons'
+import PrimaryButton, { SecondaryButton } from 'components/Buttons'
 import LinkText from 'components/LinkText'
 import GoogleIcon from 'components/Icons/GoogleIcon'
 import { useMutation } from 'react-query'
@@ -45,7 +41,9 @@ function ModalLogin(props: ModalLoginProps) {
       }),
     onSuccess(data, variables, context) {
       saveToken(data?.data?.token)
-      router.reload()
+      router.push('/dashboard/my-profile').then(() => {
+        window.location.reload()
+      })
     },
   })
 
@@ -54,16 +52,12 @@ function ModalLogin(props: ModalLoginProps) {
       width={640}
       footer={[]}
       destroyOnClose
-      open={token === undefined ? modalLogin : false}
+      open={modalLogin}
       onCancel={setModalLogin}
-      title={
-        <Tag color="#EEF6FB" className="rounded-full px-6 py-1">
-          <Text className="text-primary text-lg font-bold">Login</Text>
-        </Tag>
-      }
+      title={<Text className="text-primary text-lg font-bold mb-6">LOGIN</Text>}
     >
       <Text size="h3" className="font-bold text-[#444458]">
-        Login to Your Padang HM Account
+        Login to Your We Run the City Account
       </Text>
       <Form
         name="login"
@@ -76,14 +70,11 @@ function ModalLogin(props: ModalLoginProps) {
       >
         <Form.Item
           name="email"
-          label="Nama Lengkap"
+          label="Email"
           className="font-inter text-sm font-medium"
           rules={[{ required: true, message: 'Tidak boleh kosong!' }]}
         >
-          <SimpleInput
-            className="font-normal"
-            placeholder="Masukkan nama lengkap"
-          />
+          <SimpleInput className="font-normal" placeholder="Masukkan email" />
         </Form.Item>
         <Form.Item
           name="password"
@@ -98,7 +89,7 @@ function ModalLogin(props: ModalLoginProps) {
         </Form.Item>
         <div className="flex justify-end">
           <LinkText href="/forgot-password">
-            <Text className="text-primary">Forget Password</Text>
+            <Text className="text-primary">Lupa Password</Text>
           </LinkText>
         </div>
         <Form.Item className="w-full mt-8">
@@ -108,7 +99,7 @@ function ModalLogin(props: ModalLoginProps) {
         </Form.Item>
         <Divider dashed>
           <Text className="font-medium text-[#616161]" size="body1">
-            Or
+            Atau
           </Text>
         </Divider>
         <SecondaryButton className="relative h-14 shadow-sm border-none hover:bg-transparent hover:text-none flex items-center w-full justify-center">
@@ -116,19 +107,19 @@ function ModalLogin(props: ModalLoginProps) {
             <GoogleIcon />
           </span>
           <Text className="text-[#444458] text-base font-semibold text-center">
-            Login with Google
+            Login dengan Google
           </Text>
         </SecondaryButton>
         <div className="flex items-center w-full text-center justify-center gap-x-1 mt-8">
           <Text size="body1" className="font-medium text-[#616161]">
-            Don&apos;t Have an Account
+            Tidak mempunyai akun
           </Text>
           <LinkText
             onClick={setModalLogin}
             href="/register"
             className="text-base font-medium text-primary"
           >
-            Register Now
+            Buat Akun Sekarang
           </LinkText>
         </div>
       </Form>

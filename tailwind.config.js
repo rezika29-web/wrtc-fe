@@ -8,6 +8,15 @@ module.exports = {
     './src/views/**/*.{jsx,tsx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1.25rem',
+        md: '2.625rem',
+        lg: '7.625rem',
+        '2xl': '7.625rem',
+      },
+    },
     screens: {
       sm: '640px',
       md: '786px',

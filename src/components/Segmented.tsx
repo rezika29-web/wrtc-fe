@@ -22,14 +22,16 @@ export default function SegmentedComponent(props: SegmentedComponentProps) {
     ...restProps
   } = props
 
+  const router = useRouter()
+
   const activeButton = (option) => {
-    return activeSegment === option.label
+    return option.link === router.pathname
       ? 'bg-primary text-[#FFFFFF] h-16'
       : 'bg-[#EBEBEB] text-[#B4B4BC] h-14'
   }
 
   return (
-    <div className="m-0 justify-center flex items-center">
+    <div className="m-0 justify-center flex items-center px-5">
       {options.map((option) => {
         if (!hrefSegmented) {
           return (
@@ -38,11 +40,11 @@ export default function SegmentedComponent(props: SegmentedComponentProps) {
               onClick={onClick}
               className={twMerge(
                 activeButton(option),
-                'flex items-center font-inter justify-center text-center font-medium border-none rounded-lg cursor-pointer select-none hover:h-16 hover:bg-[#1088C8] hover:text-[#FFFFFF] ',
+                `flex items-center font-inter justify-center text-center font-medium border-none rounded-lg cursor-pointer select-none hover:h-16 hover:bg-[#1088C8] hover:text-[#FFFFFF]`,
                 className,
               )}
               key={option.label}
-              style={{ whiteSpace: 'nowrap' }}
+              style={{ whiteSpace: 'normal' }}
             >
               {option.label}
             </PrimaryButton>
@@ -55,13 +57,12 @@ export default function SegmentedComponent(props: SegmentedComponentProps) {
               onClick={onClick}
               className={twMerge(
                 activeButton(option),
-                'flex items-center font-inter justify-center text-center font-medium border-none rounded-lg cursor-pointer select-none hover:h-16 hover:bg-[#1088C8] hover:text-[#FFFFFF] ',
+                'flex items-center font-inter justify-center text-center  text-xs md:text-base font-medium border-none rounded-lg cursor-pointer select-none hover:h-16 hover:bg-[#1088C8] hover:text-[#FFFFFF] whitespace-normal md:whitespace-nowrap',
                 className,
               )}
               key={option.label}
-              style={{ whiteSpace: 'nowrap' }}
             >
-              {option.label}
+              <span className="block"> {option.label}</span>
             </PrimaryButton>
           </Link>
         )

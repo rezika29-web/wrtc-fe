@@ -1,8 +1,10 @@
 import {
   FacebookFilled,
   InstagramFilled,
-  LinkedinFilled,
   YoutubeFilled,
+  TikTokFilled,
+  WhatsAppOutlined,
+  CopyrightOutlined,
 } from '@ant-design/icons'
 import { Image } from 'antd'
 import { IconButton, TextButton } from 'components/Buttons'
@@ -48,8 +50,12 @@ const socialMedia = [
     icon: <FacebookFilled className="text-white" />,
   },
   {
-    name: 'linkedin',
-    icon: <LinkedinFilled className="text-white" />,
+    name: 'tiktok',
+    icon: <TikTokFilled className="text-white" />,
+  },
+  {
+    name: 'whatsapp',
+    icon: <WhatsAppOutlined className="text-white" />,
   },
   {
     name: 'youtube',
@@ -64,16 +70,24 @@ const socialMedia = [
 function Footer() {
   return (
     <div>
-      <div className="bg-hover py-20 px-24 overflow-x-hidden min-[610px]:flex items-center justify-center">
-        <div className="flex-col min-[610px]:w-[33%] mb-20">
+      <div
+        className="bg-hover py-10 px-24 overflow-x-hidden min-[610px]:flex justify-center"
+        style={{
+          backgroundImage: "url('/images/BGFooter.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="flex-col min-[610px]:w-[33%]  ">
           <Image
             preview={false}
-            src="/logo/wrtc-white.png"
+            src="/logo/WRTC-2.png"
             className="md:w-44 w-28"
           />
           <div className="mt-8">
             <Text className="text-[#AAD2EB] text-center min-[610px]:text-left">
-              Partner By
+              Powered By
             </Text>
             <div className="flex flex-wrap min-[610px]:justify-start justify-center">
               {partnerLogo.map((d) => (
@@ -88,7 +102,7 @@ function Footer() {
           </div>
         </div>
 
-        <div className="flex-col min-[610px]:w-[33%] mb-20">
+        <div className="flex-col min-[610px]:w-[33%]  ">
           <div>
             <Text className="text-[#AAD2EB] text-center">Quicklinks</Text>
             <div className="flex flex-wrap justify-center mt-6">
@@ -101,7 +115,7 @@ function Footer() {
           </div>
         </div>
 
-        <div className="flex-col min-[610px]:w-[33%] mb-20">
+        <div className="flex-col min-[610px]:w-[33%] ">
           <div>
             <Text className="text-[#AAD2EB] text-center">Social Media</Text>
             <div className="flex flex-wrap justify-center mt-6 gap-5">
@@ -117,9 +131,16 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="bg-primary py-6">
-        <Text className="text-[#AAD2EB] text-base text-center">
-          Copyright 2024 Pirate ipsum arrgh bounty warp jack{' '}
+      <div className=" py-6">
+        <Text className="text-[#AAD2EB] text-base text-center" size="h1">
+          <CopyrightOutlined className="mr-3" /> Copyright 2024{' '}
+          <Image
+            preview={false}
+            src="/images/Ellipse-203.png"
+            style={{ width: 10, height: 10 }}
+            className="mr-3 ml-3"
+          />{' '}
+          We Run The City
         </Text>
       </div>
     </div>

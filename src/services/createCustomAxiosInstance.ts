@@ -5,12 +5,13 @@ import Router from 'next/router'
 type IParams = {
   baseURL: string
   tokenLocalStorageKey?: string
+  version: string
 }
 
 function createCustomAxiosInstance(params: IParams) {
-  const { baseURL, tokenLocalStorageKey } = params
+  const { baseURL, tokenLocalStorageKey, version } = params
   const axiosInstance = axios.create({
-    baseURL,
+    baseURL: version ? `${baseURL}/${version}` : baseURL,
   })
 
   axiosInstance.interceptors.request.use(async (config: any) => {
@@ -51,7 +52,7 @@ function createCustomAxiosInstance(params: IParams) {
 
       if (error?.response?.status === 401 && tokenLocalStorageKey) {
         localStorage.removeItem(tokenLocalStorageKey)
-        window.location.href = '/'
+        window.location.href = '/admin/login'
       }
 
       return Promise.reject(error)

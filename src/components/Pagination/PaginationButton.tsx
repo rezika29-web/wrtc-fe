@@ -7,7 +7,13 @@ import styles from './Paginati.module.scss'
 function PaginationButton(
   props: PaginationProps & { customSizeCharger?: boolean },
 ) {
-  const { className, customSizeCharger = false, ...restprops } = props
+  const {
+    className,
+    customSizeCharger = false,
+    pageSize,
+    total,
+    ...restprops
+  } = props
   const [currentPage, setCurrentPage] = useState(1)
 
   const handlePageChange = (page: number) => {
@@ -42,8 +48,8 @@ function PaginationButton(
             className,
           )}
           current={currentPage}
-          total={100}
-          pageSize={10}
+          total={total}
+          pageSize={pageSize}
           onChange={handlePageChange}
           showSizeChanger={false}
         />

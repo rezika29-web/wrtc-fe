@@ -30,6 +30,7 @@ module.exports = {
     'no-param-reassign': 1,
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react/no-unstable-nested-components': 'off',
     'react/jsx-filename-extension': [2, { extensions: ['.tsx'] }],
     'react/jsx-one-expression-per-line': 'off',
     'react/jsx-wrap-multilines': 'off',

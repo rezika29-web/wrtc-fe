@@ -9,12 +9,18 @@ type CardPriceProps = {
   href?: string
   title: string
   date: string
-  items: { id: string; distanceLabel: string; price: string }[]
+  items: { id: string; title: string; price: string }[]
   className?: any
 }
 
 export default function CardPrice(props: CardPriceProps) {
   const { title, date, items, className, ...restProps } = props
+
+  const formatPrice = (price) =>
+    new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(price)
   return (
     <Card
       {...restProps}
@@ -35,16 +41,16 @@ export default function CardPrice(props: CardPriceProps) {
       </div>
 
       {/* distance category */}
-      {items.map((item) => (
+      {items?.map((item) => (
         <div key={item.id} className="flex justify-between items-center">
           <Text className="font-inter font-medium text-sm leading-5 text-[#444458]">
-            {item.distanceLabel}
+            {item.title}
           </Text>
           <div className="md:w-32 w-24">
             <Divider dashed style={{ borderColor: '#B5DAEE' }} />
           </div>
           <Text className="font-inter font-semibold text-sm leading-5 text-[#1088C8]">
-            {item.price}
+            {formatPrice(item.price)}
           </Text>
         </div>
       ))}

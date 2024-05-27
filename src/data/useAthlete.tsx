@@ -24,7 +24,7 @@ function useAthlete(isAuth) {
   const query = useQuery<IResponse>(
     'athlete',
     () =>
-      CallAPI.public.get(`/athlete/me`).then((res) => {
+      CallAPI.user.get(`/athlete/me`).then((res) => {
         return res.data
       }),
     { enabled: isAuth },

@@ -1,13 +1,29 @@
 import { useQuery, UseQueryOptions } from 'react-query'
 import { AxiosError } from 'axios'
 import CallAPI from 'services/CallAPI'
+import { useEffect, useState } from 'react'
 
 interface User {
   id: number
   name: string
+  email: string
+  username: string
+  fullname: string
+  new_password: string
+  confirm_new_password: string
 }
 
-type IResponse = User[]
+type IResponse = {
+  confirm_new_password: string
+  new_password: string
+  name: string
+  email: string
+  username: string
+  fullname: string
+  total: string
+  id: string
+  data: User[]
+}
 
 type IParams = {
   page?: number
@@ -16,22 +32,41 @@ type IParams = {
 }
 
 function useUsers(params: IParams = {}) {
-  const { page = 1, pageSize = 10, options } = params
-  const queryKey = ['/users', page, pageSize]
+  const { page = 1, pageSize = 10, options, ...restParams } = params
+  const [pagination, setPagination] = useState({ page, pageSize })
 
-  const query = useQuery<IResponse, AxiosError>(
+  useEffect(() => {
+    setPagination({ page, pageSize })
+  }, [page, pageSize])
+
+  const queryKey = ['/users', pagination, JSON.stringify(restParams)]
+
+  const query = useQuery<IResponse, AxiosError>({
     queryKey,
-    () =>
-      CallAPI.getDummyUsers({ page, pageSize }).then((res) => {
-        return res.data
-      }),
-    { ...options },
-  )
+    queryFn() {
+      return CallAPI.getAllUser({
+        ...restParams,
+        ...pagination,
+      })
+        .then((res) => {
+          return res.data
+        })
+        .catch((error) => {
+          throw new Error(
+            error.response?.data?.message || 'Failed to fetch Users',
+          )
+        })
+    },
+    ...options,
+  })
 
-  return {
-    ...query,
-    data: query.data,
+  const totalData = parseInt(query.data?.total || '0', 10)
+
+  const handlePaginationChange = (p: number, ps: number) => {
+    setPagination((prev) => ({ ...prev, page: p, pageSize: ps }))
   }
+
+  return { ...query, totalData, pagination, handlePaginationChange }
 }
 
 export default useUsers

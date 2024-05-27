@@ -7,7 +7,7 @@ import { ConfigProvider } from 'antd'
 
 const title = 'We Run The City'
 const description = `Rum buccaneer tails crack fleet ketch buccaneer. Belaying o'nine scourge ballast poop heave bilged. Grog bucko overhaul lateen grapple black anchor jennys. Measured tell rat poop gangway spanish lateen. Swab hang lugsail six jones' sink seven smartly lee.`
-const webIconURL = '/logo/favicon.png'
+const webIconURL = '/logo/WRTC-2.png'
 
 function ThemeSetting({ children }) {
   return (

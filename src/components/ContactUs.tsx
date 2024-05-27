@@ -16,7 +16,7 @@ export default function ContactUs() {
         </Text>
         <Text
           size="h1"
-          className="md:text-[44px] text-2xl font-rubik font-semibold mb-12"
+          className="md:text-[44px] text-2xl font-rubik font-semibold md:mb-12 mb-6"
           style={{ color: '#FAFAFA' }}
         >
           Get in Touch with Us
@@ -30,26 +30,26 @@ export default function ContactUs() {
           membantu Anda dengan pertanyaan apa pun yang anda miliki mengenai We
           Run the City.
         </Text>
-        <LinkButton className="text-[#F89D3C] md:text-lg md:h-14 md:w-52 md:mb-0 md:mx-0 text-lg h-14 w-full font-medium mb-16 mx-auto">
+        <LinkButton className="text-[#F89D3C] md:text-lg md:h-14 md:w-52 md:mb-0 md:mx-0 text-lg h-14 w-full font-medium mx-auto">
           Contact Us
         </LinkButton>
       </div>
 
-      <div className="md:relative md:items-center md:justify-between md:z-0">
-        <div className="md:absolute md:-right-12 md:bottom-0 md:flex md:justify-end md:items-end">
+      <div className="relative md:items-center md:justify-between z-0">
+        <div className="absolute md:-right-12 md:bottom-0 md:flex md:justify-end md:items-end">
           <Image
             src="/icons/vektor-1.svg"
             alt="img-faq"
-            width={740}
-            height={389}
-            className="relative left-[40rem] top-[48px] z-10"
+            width={671}
+            height={334}
+            className="md:w-[740px] md:h-[389px] relative md:left-[36rem] md:top-[59px] -top-28 right-6  z-10"
           />
           <Image
             src="/icons/vektor-2.svg"
             alt="img-faq"
-            width={765}
-            height={389}
-            className="relative left-1 top-[48px] rounded-2xl"
+            width={673}
+            height={335}
+            className="md:w-[745px] md:h-[389px] relative md:-left-2 md:top-[59px] -top-[253px] left-8 rounded-2xl"
           />
         </div>
       </div>

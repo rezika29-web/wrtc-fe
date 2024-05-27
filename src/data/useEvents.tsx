@@ -36,7 +36,10 @@ function useEvents(params: IParams = {}) {
     },
   })
 
-  return query
+  return {
+    ...query,
+    data: query?.data?.data,
+  }
 }
 
 export default useEvents

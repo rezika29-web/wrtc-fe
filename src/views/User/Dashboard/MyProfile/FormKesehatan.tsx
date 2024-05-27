@@ -1,75 +1,84 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SimpleInput from 'components/Forms/Input/Inputs'
 import { Form, Radio, Input } from 'antd'
+import useBloods from 'data/useBloods'
 
 const { TextArea } = Input
 
-const customizeRequiredMark = (
-  label: React.ReactNode,
-  { required }: { required: boolean },
-) => (
-  <>
-    {label}&nbsp;
-    {required && <span style={{ color: 'red' }}>*</span>}
-  </>
-)
+function FormKesehatan(dataUser) {
+  const { data: dataMasterBlood } = useBloods() || {}
+  const dataBloods = dataUser?.MasterBloodId
+  const [masterBloods, setMasterBloods] = useState([])
+  const [valueBloods, setValueBloods] = useState(null)
 
-function FormKesehatan() {
-  const [form] = Form.useForm()
+  useEffect(() => {
+    if (dataMasterBlood) {
+      setMasterBloods(dataMasterBlood)
+    }
+  }, [dataMasterBlood])
+  useEffect(() => {
+    if (dataBloods) {
+      setValueBloods(String(dataBloods))
+    }
+  }, [dataBloods])
+  const optionsBlood = masterBloods.map((blood) => ({
+    label: blood.nama,
+    value: blood.id.toString(),
+  }))
 
   return (
-    <Form form={form} layout="vertical" requiredMark={customizeRequiredMark}>
+    <>
       <Form.Item
         label="Kontak Darurat"
-        name="kontak"
+        name="noTelpDarurat"
         rules={[{ required: true }]}
         colon={false}
         labelAlign="right"
+        initialValue={dataUser?.noTelpDarurat || ''}
       >
         <SimpleInput placeholder="Masukkan nomor kontak darurat" />
       </Form.Item>
       <Form.Item
         label="Atas Nama"
-        name="kontak_name"
+        name="namaTelpDarurat"
         rules={[{ required: true }]}
         colon={false}
         labelAlign="right"
+        initialValue={dataUser?.namaTelpDarurat || ''}
       >
         <SimpleInput placeholder="Masukkan nama orang sebagai kontak darurat" />
       </Form.Item>
       <Form.Item
         label="Hubungan dengan Kontak Darurat"
-        name="kontak_hubungan"
+        name="emergencyContactRelation"
         rules={[{ required: true }]}
         colon={false}
         labelAlign="right"
+        initialValue={dataUser?.emergencyContactRelation || ''}
       >
         <SimpleInput placeholder="Masukkan hubungan dengan kontak darurat" />
       </Form.Item>
-      <Form.Item label="Golongan Darah" name="gol" rules={[{ required: true }]}>
-        <Radio.Group>
-          <Radio value="AB" style={{ marginRight: '30px' }}>
-            AB
-          </Radio>
-          <Radio value="A" style={{ marginRight: '30px' }}>
-            A
-          </Radio>
-          <Radio value="B" style={{ marginRight: '30px' }}>
-            B
-          </Radio>
-          <Radio value="O" style={{ marginRight: '30px' }}>
-            O
-          </Radio>
-        </Radio.Group>
+      <Form.Item
+        label="Golongan Darah"
+        name="MasterBloodId"
+        initialValue={valueBloods || ''}
+      >
+        <Radio.Group options={optionsBlood} />
       </Form.Item>
+
       <Form.Item
         label="Daftar Riwayat Penyakit"
-        name="alamat"
+        name="AthleteDiseaseHistories"
         rules={[{ required: true }]}
+        initialValue={
+          dataUser?.AthleteDiseaseHistories[0].name !== 'null'
+            ? dataUser?.AthleteDiseaseHistories[0].name
+            : 'Tidak ada'
+        }
       >
         <TextArea placeholder="Masukkan riwayat penyakit" />
       </Form.Item>
-    </Form>
+    </>
   )
 }
 export default FormKesehatan
