@@ -89,6 +89,8 @@ function Register() {
     setDataImage(image)
   }
 
+  console.log(dataImage, 'resize file');
+
   const sendData = async () => {
     const date = new Date(dataRegister.dataSecond.date_of_birth.$d)
     const tanggal = date.getDate()
@@ -139,9 +141,7 @@ function Register() {
   const cancel = (e) => {
     console.log(e)
   }
-  const handlePreview = async (file) => {
-    console.log('handle', file.file.originFileObj)
-
+  const handlePreview = async (file: any) => {
     const isLt2M = file.file.size / 1024 / 1024 < 2
     if (!isLt2M) {
       message.error('Image must be smaller than 2MB!')
@@ -152,7 +152,7 @@ function Register() {
       )
     }
   }
-  const handleChange = (info) => {
+  const handleChange = (info: any) => {
     const { status } = info.file
     const isLt2M = info.file.size / 1024 / 1024 < 2
 
@@ -175,47 +175,47 @@ function Register() {
       message.error(`${info.file.name} file upload failed.`)
     }
   }
-  const beforeUpload = async (file) => {
-    const isJpgOrPng =
-      file.type === 'image/jpeg' ||
-      file.type === 'image/png' ||
-      file.type === 'image/jpg'
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!')
-      return Upload.LIST_IGNORE
-    }
-    try {
-      const resizedImage = await new Promise((resolve, reject) => {
-        Compress.imageFileResizer(
-          file,
-          SizeImageCompressor.width,
-          SizeImageCompressor.height,
-          file?.name?.split('.').pop() ?? 'JPG',
-          SizeImageCompressor.quality,
-          SizeImageCompressor.rotation,
-          (uri) => {
-            resolve(uri)
-          },
-          'blob',
-        )
-      })
-      const newSize = Math.round((newFile.size / 1024 / 1024) * 100) / 100
+  // const beforeUpload = async (file: any) => {
+  //   const isJpgOrPng =
+  //     file.type === 'image/jpeg' ||
+  //     file.type === 'image/png' ||
+  //     file.type === 'image/jpg'
+  //   if (!isJpgOrPng) {
+  //     message.error('You can only upload JPG/PNG file!')
+  //     return Upload.LIST_IGNORE
+  //   }
+  //   try {
+  //     const resizedImage = await new Promise((resolve, reject) => {
+  //       Compress.imageFileResizer(
+  //         file,
+  //         SizeImageCompressor.width,
+  //         SizeImageCompressor.height,
+  //         file?.name?.split('.').pop() ?? 'JPG',
+  //         SizeImageCompressor.quality,
+  //         SizeImageCompressor.rotation,
+  //         (uri) => {
+  //           resolve(uri)
+  //         },
+  //         'blob',
+  //       )
+  //     })
+  //     const newSize = Math.round((newFile.size / 1024 / 1024) * 100) / 100
 
-      if (newSize > SizeImageCompressor.limitServer) {
-        Modal.warning({
-          title: 'Ukuran foto terlalu besar',
-          content:
-            'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
-          closable: false,
-        })
-        return false
-      }
-    } catch (error) {
-      message.error('Failed to resize image!')
-      return false
-    }
-    return false
-  }
+  //     if (newSize > SizeImageCompressor.limitServer) {
+  //       Modal.warning({
+  //         title: 'Ukuran foto terlalu besar',
+  //         content:
+  //           'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
+  //         closable: false,
+  //       })
+  //       return false
+  //     }
+  //   } catch (error) {
+  //     message.error('Failed to resize image!')
+  //     return false
+  //   }
+  //   return false
+  // }
   const props = {
     name: 'file',
     multiple: false,
@@ -446,67 +446,66 @@ function Register() {
             <Dragger
               {...props}
               accept="image/png, image/jpeg, image/jpg"
-              // eslint-disable-next-line consistent-return
               beforeUpload={(file) => {
-                console.log('origin', file)
-
+                console.log(file, 'original file');
+                
                 const isJpgOrPng =
                   file.type === 'image/jpeg' ||
                   file.type === 'image/png' ||
-                  file.type === 'image/jpg'
+                  file.type === 'image/jpg';
                 if (!isJpgOrPng) {
-                  message.error('You can only upload JPG/PNG file!')
-                  return Upload.LIST_IGNORE
+                  message.error('Anda hanya bisa mengunggah file JPG/PNG!');
+                  return Upload.LIST_IGNORE;
                 }
+      
                 Compress.imageFileResizer(
                   file,
                   SizeImageCompressor.width,
                   SizeImageCompressor.height,
-                  'JPG',
+                  file.type.split('/')[1].toUpperCase(),
                   SizeImageCompressor.quality,
                   SizeImageCompressor.rotation,
-                  // eslint-disable-next-line consistent-return
-                  (uri) => {
-                    console.log('uri', uri.size)
-
-                    handleImage({
-                      url: URL.createObjectURL(uri),
-                      size: uri.size,
-                      type: uri.type,
-                    })
-                    const newFile = BlobToFile(uri as Blob, file.name)
-                    const newSize =
-                      Math.round((newFile.size / 1024 / 1024) * 100) / 100
-                    if (newSize > SizeImageCompressor.limitServer) {
-                      Modal.warning({
-                        title: 'Ukuran foto terlalu besar',
-                        content:
-                          'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
-                        closable: false,
+                  (uri: any) => {
+                    // Mengubah base64/uri menjadi Blob
+                    fetch(uri)
+                      .then((res) => res.blob())
+                      .then((blob) => {
+                        const newFile = BlobToFile(blob, file.name);
+                        const newSize =
+                          Math.round((newFile.size / 1024 / 1024) * 100) / 100;
+                        if (newSize > SizeImageCompressor.limitServer) {
+                          Modal.warning({
+                            title: 'Ukuran foto terlalu besar',
+                            content:
+                              'File foto anda terlalu besar, file foto melebihi 2 MB harap upload kembali',
+                            closable: false,
+                          });
+                          return false;
+                        }
+      
+                        handleImage({
+                          uri: URL.createObjectURL(newFile),
+                          size: newFile.size,
+                          type: newFile.type,
+                          name: file.name,
+                        });
+      
+                        setFileList([newFile]);
+                        setDataImage(newFile);
+      
+                        return false;
                       })
-                      return false
-                    }
-                    // setFileList([newFile])
-
-                    // setDataImage(newFile)
-
-                    // console.log('new', newFile)
-                    // const imageURL = URL.createObjectURL(newFile)
-                    // localStorage.setItem('uploadedImage', imageURL)
-                    // const link = document.createElement('a')
-                    // link.href = imageURL
-                    // link.download = file.name
-                    // document.body.appendChild(link)
-                    // link.click()
-                    // document.body.removeChild(link)
-
-                    // setFieldValue('image', newFile)
-                    // setFieldValue('imagePreview', URL.createObjectURL(newFile))
+                      .catch((err) => {
+                        console.error('Error resizing image:', err);
+                        message.error('Error resizing image.');
+                      });
                   },
-                  'blob',
+                  'base64',
                   400,
                   400,
-                )
+                );
+      
+                return false;
               }}
               onRemove={() => {
                 setFileList([])
